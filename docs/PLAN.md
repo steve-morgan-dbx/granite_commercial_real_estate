@@ -148,7 +148,69 @@ granite_commercial_real_estate/
 └── scripts/                  # scrub check + hook installer
 ```
 
-## 9. Schedule
+## 9. Build status (as of Thu 10/22, end of day)
+
+**Done and verified in the workspace** (pipeline `Granite Peak CRE Pipeline`, latest update COMPLETED; catalog `smmorgan_catalog`, schema `granite_commercial_real_estate`):
+
+| Layer | State | Row counts |
+|---|---|---|
+| Setup | Schema + `landing` / `artifacts` volumes | — |
+| Synthetic data | 118 properties, 391 leases, 20 deals, 83 lease PDFs, 26 deal docs, 32 CDC files, ground truth | — |
+| Overture | Places, Buildings, Divisions (release 2026-10-21.0, Western US bbox) | 4.07M places, 22K divisions |
+| Bronze | 14 Auto Loader streaming tables | — |
+| Silver | AUTO CDC (SCD1) for 7 ERP entities, 2 append-only, `ai_parse_document` + `ai_extract` MVs, H3 on POIs | 391 leases, 83 parsed leases |
+| Gold | rent_roll, rollover_schedule, lease_abstract, deal_abstract, deal_pipeline, lease_discrepancies, property_h3, h3_market_context, renewal_scores (placeholder) | 391 / 343 / 83 / 26 / 20 / **0** / 118 / 118 / 391 |
+
+**Defects found on review: fix these first (they block the demo story):**
+
+1. **Generated PDFs are almost empty.** In `_make_lease_pdf` and `_make_deal_om`, `pdf.multi_cell(w, 5, line)` leaves the cursor at the right margin, so after the first line every line renders off the page. Each lease PDF is ~1.7 KB, and parsing finds only the title, lease ID and "Date:". As a result **every extracted field is NULL** (mean `abstract_confidence` 0.10) and **`lease_discrepancies` is empty** (0 of 8 planted mismatches).
+   - Fix: `pdf.multi_cell(w, 5, line, new_x="LMARGIN", new_y="NEXT")`.
+   - Assert in the notebook that each PDF is > 3 KB and that `ai_parse_document` returns > 10 elements.
+2. **Expired leases look occupied.**
+   - 105 of 391 ERP leases ended before the as-of date (2026-10-01), yet their units are still marked Occupied, which overstates occupancy and ABR.
+   - Fix: generate in-place leases with `lease_end > AS_OF` (vacate or roll the rest).
+   - Keep a few expired leases as *holdover* tenants only if they're labeled that way.
+3. **The PDF subset misses upcoming rollover.**
+   - The expiring set sorts ascending and takes the first 65, so it picks the *oldest, already-expired* leases.
+   - 67 of the 83 PDFs are expired leases, and only 2 expire in the next 24 months. That breaks benchmarks 2, 4 and 8.
+   - Fix: select `AS_OF < lease_end <= AS_OF + 36 months` plus the top 25 by ABR, and size the portfolio so the subset lands at ~60–100 (or use 24 months and say so in §4).
+4. **Extraction output shape.** After fixing #1, re-check the `result:response:<field>:value` paths against a real `ai_extract` v2.1 result. Also stop asking the model to self-report `abstract_confidence`; derive it from per-field results or from parse element confidence.
+5. **Pipeline source drift.**
+   - The pipeline runs from a copy of the SQL in a separate workspace folder, not from this repo's `pipelines/` directory.
+   - Fix: point the pipeline at the repo (via `databricks.yml`) so the committed code is the code that runs.
+6. **Year-over-year occupancy needs history.**
+   - Silver is SCD1, but benchmark 3 compares occupancy this year vs. last year. Use SCD2 for `unit` and `commlease`, or derive monthly occupancy from `lease_charges`/`gl_actuals`.
+   - Keep SCD2 on the dims as the plan's architecture describes.
+7. **No execution evidence yet.** The three committed notebooks have no outputs. Re-run them, export with outputs, and start `evidence/`.
+
+**Not started:**
+- `databricks.yml` + `resources/`
+- UC governance (tags, column masks, fund row filter, comments)
+- Metric view
+- Trusted H3 functions
+- Renewal model (`renewal_scores` is a NULL placeholder)
+- Lakebase (synced tables, `abstract_review`, merge back to gold)
+- Genie space + benchmarks
+- Databricks App
+- Extraction accuracy vs. ground truth
+- Deck
+
+## 10. Next steps (in order)
+
+| # | Step | Output | Target |
+|---|---|---|---|
+| 1 | Fix generator defects 1–3; regenerate the landing data; full-refresh the pipeline | Non-empty abstracts; 8 discrepancies detected; ≥60 PDFs in the rollover window | Fri 10/23 AM |
+| 2 | Fix extraction parsing (#4); add `evidence/extraction_accuracy.json` (field-level accuracy vs. ground truth) | Measured accuracy | Fri 10/23 |
+| 3 | `databricks.yml` with pipeline (repo source, #5), setup job, data-gen job; SCD2 dims (#6) | Reproducible deploy | Fri 10/23 |
+| 4 | Governance: tags, masks on tenant contact fields, fund row filter, column comments; metric view (ABR, WALT, occupancy, NOI, abstraction coverage) | `src/governance/` + evidence queries | Mon 10/26 AM |
+| 5 | Trusted functions (`competitors_within`, `assets_near`, `assets_near_deal`) + neighborhood rollup | Validated SQL | Mon 10/26 AM |
+| 6 | Renewal model: features from abstracts + payment history + H3 context; MLflow + UC registry; batch-score `renewal_scores` | Notebook with outputs, model metrics | Mon 10/26 |
+| 7 | Genie space: tables, metric view, functions, instructions, 11 benchmarks; iterate to ≥80% | `src/genie/` + benchmark results JSON | Mon 10/26 (gate) |
+| 8 | Lakebase: synced `property_360`, `lease_abstract`, `renewal_scores`; `abstract_review` table + grants; merge corrections into gold | Lakebase query output | Tue 10/27 AM |
+| 9 | Databricks App: H3 map, property 360, review queue with writeback, embedded Genie | App API responses in `evidence/` | Tue 10/27 |
+| 10 | Evidence pass: notebooks with outputs, `evidence/`, README stage map, `demo.yml` → `status: built`; deck | Tests pass at `status: built` | Tue 10/27–Fri 10/30 |
+
+## 11. Schedule
 
 | When | Work |
 |---|---|
@@ -160,11 +222,12 @@ granite_commercial_real_estate/
 
 **Cut line:** if time runs short, the app keeps the map + Genie chat and drops the writeback, and the renewal model becomes a scored rule set logged to MLflow. Genie + H3 + document abstraction are never cut.
 
-## 10. Risks
+## 12. Risks
 
 | Risk | Mitigation |
 |---|---|
 | Genie accuracy on spatial questions | Trusted UC functions for H3 logic, a metric view, validated benchmarks, explicit instructions |
+| Workspace edits (Genie Code) and local edits diverge | One writer at a time; always pull before editing and push when done; the pipeline runs from the repo source |
 | Clause questions undercount because only a subset of leases is abstracted | `has_abstract` flag + coverage measure; Genie instruction to report coverage; the subset is defined so that near-term rollover is fully covered |
 | Extraction quality on synthetic PDFs | The generator emits ground truth, so field-level accuracy is measured and committed |
 | Overture download blocked from serverless | Download the bounding-box extract locally, upload to the volume, and ingest with Lakeflow as usual |
