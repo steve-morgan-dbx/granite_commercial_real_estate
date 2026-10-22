@@ -8,7 +8,7 @@ An end-to-end Databricks prototype for a fictional commercial real estate (CRE) 
 
 - **Industry:** commercial real estate investment management (REITs, real-asset managers).
 - **Specific problem:** lease rollover and renewal risk can't be measured at the portfolio level, because the clauses that drive it (renewal options, co-tenancy, termination rights, escalations, exclusives) exist only in lease documents. The neighborhood context that predicts renewal (competing supply, amenity/POI density) isn't joined to the rent roll either.
-- **Company:** Granite Peak Real Estate Partners: ~120 assets across office, retail, industrial and multifamily in about 8 Western / Mountain-West MSAs, plus an active acquisitions pipeline.
+- **Company:** Granite Peak Real Estate Partners: ~120 commercial assets across office, retail and industrial (no multifamily) in about 8 Western / Mountain-West MSAs, plus an active acquisitions pipeline.
 - **Personas:**
   - *Executive sponsor*, Head of Transactions: faster, better-informed buy/sell/hold decisions.
   - *Domain owner*, Asset Management / BI lead: self-service analytics and usable document data.
@@ -33,7 +33,7 @@ Individual features (an H3 function, a document parser, a chat-with-data tool) e
 |---|---|---|---|
 | 1 | **Unstructured documents are governed data.** PDFs live in UC volumes; `ai_parse_document` + `ai_extract` run inside the Lakeflow pipeline and inherit lineage, tags and masks | Lineage: lease PDF → parsed text → abstract → Genie answer → app | [First American](https://www.databricks.com/customers/fadna): 100+ fields extracted from ~4M historical title-policy images (from an 8B+ document repository); 70% lower cost, 75% less project time, 10× more data elements |
 | 2 | **ML lives in the same pipeline as the data.** MLflow + the UC model registry sit next to the gold tables | Renewal model trained on document-derived clauses + ERP history + H3 features, batch-scored into gold | [Reonomy](https://www.databricks.com/customers/reonomy): 3× faster ML lifecycle; model to production in <2 months (previously 6). [Xanadu](https://www.databricks.com/customers/xanadu-realty): Feature Store + MLflow on unified data with Power BI on top; +25% lead-to-customer conversion |
-| 3 | **Geospatial is native SQL at lakehouse scale**, and Genie can use it | Genie: "assets within ~2 km of deal GP-ACQ-014" via an `h3_kring` trusted function; neighborhood rollups with `h3_coverash3` + `st_covers` | [Geospatial GenAI for Real Estate Investment](https://community.databricks.com/t5/technical-blog/customer-smarter-maps-smarter-markets-geospatial-genai-for-real/ba-p/127677): H3 + spatial SQL + Vector Search + Foundation Model APIs in one workflow; 95% runtime reduction using H3 distance approximation |
+| 3 | **Geospatial is native SQL at lakehouse scale**, and Genie can use it | Genie: "assets within ~2 km of deal GP-ACQ-014" via the `assets_near_deal` trusted function (H3 k-ring); neighborhood rollups with `h3_coverash3` + `st_covers` | [Geospatial GenAI for Real Estate Investment](https://community.databricks.com/t5/technical-blog/customer-smarter-maps-smarter-markets-geospatial-genai-for-real/ba-p/127677): H3 + spatial SQL + Vector Search + Foundation Model APIs in one workflow; 95% runtime reduction using H3 distance approximation |
 | 4 | **Natural-language analytics runs on the same governance.** Genie respects UC row filters and masks, sits on metric views, and shows its SQL | The same Genie question returns different rows for users in different funds (row filter); "Show SQL" | [JLL](https://www.databricks.com/customers/jll/training-and-certification): built JLL Azara, its CRE data and insights platform, on Databricks SQL + Delta; 60% less ETL processing time |
 | 5 | **The operational app and its database are part of the platform.** Lakebase (Postgres) is synced from gold; the app writes corrections back with no reverse-ETL tool | An analyst fixes a mis-extracted renewal date → Lakebase → gold → Genie sees the fix | (demonstrated in this build) |
 | 6 | **Third-party data arrives by open sharing, not copies** (Delta Sharing / Marketplace) | A documented `neighborhood_enrichment` contract where licensed data (e.g., ATTOM, Cotality Marketplace listings) plugs in | ATTOM and Cotality publish CRE/property data on Databricks Marketplace |
@@ -42,10 +42,10 @@ Individual features (an H3 function, a document parser, a chat-with-data tool) e
 
 | Source | Type | Use |
 |---|---|---|
-| **Synthetic ERP extracts** shaped like Yardi Voyager (`property`, `unit`, `tenant`, `commlease`, `lease_charges`, `gl_actuals`) | Generated | Landed as **CDC files in the style of Qlik Replicate** (`header__operation`, `header__timestamp`), which is a common CRE ingest pattern |
+| **Synthetic ERP extracts** shaped like Yardi Voyager (`property`, `unit`, `tenant`, `commlease`, `lease_charges`, `gl_actuals`) | Generated | Landed as **CDC files in the style of Qlik Replicate** (`header__operation`, `header__timestamp`), which is a common CRE ingest pattern. At least 24 months of history, so year-over-year occupancy (benchmark 3) is answerable |
 | **Synthetic deal pipeline** (`deal`, `deal_comps`) | Generated | Acquisitions/dispositions: stage, property type, market, ask price, cap rate, IRR, lat/lon |
 | **Synthetic deal documents** (~10–15 offering memoranda + rent rolls) | Generated PDFs | Extract asking price, NOI, WALT, tenant list, and the renewal/co-tenancy terms of in-place leases |
-| **Synthetic commercial lease PDFs** (~60–100) | Generated PDFs + ground-truth JSON | Lease abstraction. Clauses vary on purpose, and ~10% deliberately disagree with the ERP to drive discrepancy detection |
+| **Synthetic commercial lease PDFs** (~60–100; office, retail and industrial) | Generated PDFs + ground-truth JSON | Lease abstraction. **Risk-weighted subset:** every commercial lease expiring within 36 months of the as-of date, plus the 25 largest tenants by ABR regardless of expiry (the generator sizes the ERP so this lands at ~60–100). This mirrors how managers prioritize abstraction and gives full answers to benchmarks 4, 5 and 8. Clauses vary on purpose, and ~10% deliberately disagree with the ERP to drive discrepancy detection |
 | **Overture Maps: Places, Buildings, Divisions** | Public open data, ingested by Lakeflow | POI and competitor density, building footprints, neighborhood/submarket polygons. Downloaded by bounding box for the Granite Peak MSAs → UC volume → Auto Loader |
 | **ATTOM / Cotality** | Databricks Marketplace (licensed) | Not included. Shown as the day-2 enrichment plug-in via Delta Sharing |
 
@@ -57,22 +57,27 @@ Volume /landing/docs/*.pdf        ─┤  LAKEFLOW (Spark Declarative Pipeline, 
 Overture (public, bbox download)  ─┘   bronze: Auto Loader (CDC files, PDFs as binary, GeoParquet)
                                        silver: AUTO CDC → SCD2 dims (property, lease, tenant)
                                                ai_parse_document → document text
-                                               ai_extract / ai_query → lease_abstract, deal_abstract (+ confidence)
+                                               ai_extract / ai_query → raw lease and deal extractions (+ confidence)
                                                h3_longlatash3(lon, lat, 9) on properties, deals, POIs
                                        gold:   rent_roll, rollover_schedule, lease_discrepancies,
-                                               h3_market_context (POI/competitor density, k-rings,
-                                               submarket polygons), portfolio metric view
-                                               (ABR, WALT, occupancy, NOI)
+                                               lease_abstract, deal_abstract (extractions with analyst
+                                               corrections from abstract_review applied), deal_pipeline,
+                                               property_h3, h3_market_context (POI/competitor density,
+                                               k-rings, submarket polygons), renewal_scores,
+                                               neighborhood_enrichment (contract view for licensed data),
+                                               portfolio metric view (ABR, WALT, occupancy, NOI)
         │
 UNITY CATALOG  volumes, tags (PII on tenant contacts), column masks, row filter by fund,
                column comments, lineage across tables, models, functions and the Genie space
         │
 ML / GenAI     (a) GenAI document abstraction, evaluated field-by-field against generator ground truth
                (b) tenant renewal-propensity model (MLflow, UC-registered); features = document-derived
-                   lease terms + ERP payment history + H3 neighborhood → expected_vacancy_loss
+                   lease terms + ERP payment history + H3 neighborhood → gold.renewal_scores
+                    (renewal probability, expected_vacancy_loss)
         │
 LAKEBASE       synced tables (property_360, lease_abstract, renewal_scores) for low-latency app reads
-               + native Postgres table abstract_review (analyst corrections, written by the app)
+               + native Postgres table abstract_review (analyst corrections, written by the app),
+               registered in UC as a database catalog; the pipeline merges it into gold.lease_abstract
         │
 GENIE          space over gold + metric view; H3 UC functions as trusted assets; benchmark questions
         │
@@ -80,22 +85,26 @@ DATABRICKS APP H3 hex map of portfolio + market context, property 360 (Lakebase)
                document review queue with source PDF + writeback, embedded Genie chat
 ```
 
-Everything is deployed with a **Databricks Asset Bundle** (pipeline, jobs, model training, Genie setup, app, Lakebase sync).
+Everything is deployed with **Declarative Automation Bundles** (pipeline, jobs, model training, Genie setup, app, Lakebase sync).
 
 ## 6. Signature moment: H3 + document parsing in Genie
 
 Genie joins **document-derived columns** with **H3 spatial context** in a single natural-language question.
 
 - `gold.lease_abstract`: `has_co_tenancy`, `renewal_option_count`, `termination_right_date`, `escalation_type`, `exclusive_use`, `abstract_confidence`, …
+- `gold.rent_roll`: `has_abstract` flag per lease, plus an **abstraction coverage** measure (% of leases and % of ABR with an abstract) in the metric view
+- `gold.deal_abstract`: per-deal offering-memorandum fields and the in-place lease terms (renewal options, co-tenancy)
 - `gold.property_h3`: `h3_res9`, `h3_res7`, MSA, submarket
 - `gold.h3_market_context`: per-hex POI counts by category, competitor counts, building density
-- **Trusted UC functions for Genie:** `competitors_within(property_id, k_ring, category)`, `assets_near(lon, lat, k_ring)`
+- `gold.renewal_scores`: `renewal_probability`, `expected_vacancy_loss` per lease
+- **Trusted UC functions for Genie:** `competitors_within(property_id, k_ring, category)`, `assets_near(lon, lat, k_ring)`, `assets_near_deal(deal_id, k_ring)`
 - **Genie instructions:**
   - Longitude comes before latitude.
-  - `h3_kring` measures grid distance (a res-9 cell edge is about 175 m, so k=3 is roughly 1 km).
+  - `h3_kring` measures grid distance. At res 9 one hop between neighboring cell centers is about 300 m (edge about 175 m), so k=3 is roughly 1 km and k=7 is roughly 2 km.
   - For exact polygon membership, use `h3_coverash3` candidate cells, then `st_covers`.
   - Synonyms: ABR = annualized base rent, plus region names.
   - Measures come from the metric view.
+  - Clause data (co-tenancy, renewal options, termination rights, exclusives) exists only for abstracted leases: leases expiring within 36 months plus the 25 largest tenants by ABR. Whenever an answer uses clause columns, also report abstraction coverage, and never treat a missing abstract as "no clause".
 - **Benchmark questions** (each with validated SQL):
   1. Show acquisitions in the pipeline over $50M by property type and market.
   2. Which held assets have >20% of rent rolling in the next 24 months?
@@ -122,7 +131,7 @@ The build is validated from text artifacts committed to this repo:
 ```
 granite_commercial_real_estate/
 ├── README.md
-├── databricks.yml            # Asset Bundle
+├── databricks.yml            # Declarative Automation Bundle
 ├── resources/                # pipeline, jobs, app, Lakebase sync, Genie setup
 ├── src/
 │   ├── datagen/              # ERP CDC generator, lease + deal PDF generators (+ ground truth)
@@ -156,6 +165,7 @@ granite_commercial_real_estate/
 | Risk | Mitigation |
 |---|---|
 | Genie accuracy on spatial questions | Trusted UC functions for H3 logic, a metric view, validated benchmarks, explicit instructions |
+| Clause questions undercount because only a subset of leases is abstracted | `has_abstract` flag + coverage measure; Genie instruction to report coverage; the subset is defined so that near-term rollover is fully covered |
 | Extraction quality on synthetic PDFs | The generator emits ground truth, so field-level accuracy is measured and committed |
 | Overture download blocked from serverless | Download the bounding-box extract locally, upload to the volume, and ingest with Lakeflow as usual |
 | Lakebase permissions for the app | Grant the app service principal's Postgres role directly; UC grants on synced tables don't authorize Postgres reads |

@@ -26,4 +26,11 @@ build/
 .DS_Store
 .idea/
 .vscode/
+
+# Non-public material: NEVER publish (see CLAUDE.md, "Publishing rule")
+# Put internal notes, customer context and program requirements under internal/.
+# Any other non-public file added to the workspace must be listed here in the same change.
+internal/
+*.internal
+*.internal.*
 .scrub_terms

@@ -20,6 +20,8 @@ All data is synthetic or public open data.
 
 ## Development
 
+This repo is public. Read [`CLAUDE.md`](CLAUDE.md) before contributing: nothing internal is published, and non-public material stays in the gitignored `internal/` folder.
+
 Install the pre-push scrub check once per clone:
 
 ```bash
