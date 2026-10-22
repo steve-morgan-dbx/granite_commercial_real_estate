@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Databricks
+.databricks/
+.databrickscfg
+.databricks-resources.json
+
+# Node (app frontend)
+node_modules/
+dist/
+build/
+
+# Secrets / local config
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+.scrub_terms
