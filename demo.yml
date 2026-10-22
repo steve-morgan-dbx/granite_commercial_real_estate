@@ -1,0 +1,28 @@
+# Build manifest: drives tests/test_structure.py. Public repo, so no customer names or IDs here.
+customer: generic
+demo_name: granite_commercial_real_estate          # must equal the repo folder name
+title: "Granite Peak CRE Portfolio Intelligence"
+industry: commercial real estate investment management
+problem: >-
+  Lease rollover and renewal risk can't be measured at portfolio level because the driving
+  clauses live only in lease PDFs, and neighborhood context isn't joined to the rent roll.
+cloud: aws
+catalog: smmorgan_catalog                           # overridable via the notebook 'catalog' widget
+schema: granite_commercial_real_estate              # overridable via the notebook 'schema' widget
+deploy: dab
+status: scaffold                                    # scaffold -> built -> submitted (gates evidence tests)
+entry_notebook: notebooks/00_setup.ipynb
+databricks_features:                                # journey stages (all required) + capabilities
+  - lakeflow
+  - unity_catalog
+  - lakebase
+  - genai
+  - ml
+  - genie
+  - databricks_app
+  - ai_parse_document
+  - ai_extract
+  - h3_geospatial
+  - metric_views
+  - mlflow
+created: 2026-10-22

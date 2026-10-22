@@ -16,7 +16,27 @@ A fictional commercial real estate (CRE) demo that shows Databricks end to end, 
 All data is synthetic or public open data.
 
 - Plan: [`docs/PLAN.md`](docs/PLAN.md)
-- Status: scaffold only. Code, notebooks and execution evidence will follow.
+- Demo narrative: [`DEMO.md`](DEMO.md)
+- Manifest: [`demo.yml`](demo.yml) (`status: scaffold`). Code, notebooks and execution evidence will follow.
+
+## Contents
+| Path | What |
+|---|---|
+| `demo.yml` | Build manifest; drives the structure tests |
+| `DEMO.md` | Demo narrative and acts |
+| `docs/PLAN.md` | Full build plan |
+| `notebooks/00_setup.ipynb` | Entry notebook: catalog/schema widgets, schema and volumes |
+| `tests/test_structure.py` | Structure, publishing-rule and evidence tests |
+
+## Deploy
+**Bundle:** `databricks bundle deploy --target dev`, then run the setup and pipeline jobs it defines.
+
+**Notebooks:** import the repo, open `notebooks/00_setup.ipynb`, set the `catalog` and `schema` widgets, and run the numbered notebooks in order.
+
+## Run Tests
+    python -m pytest tests -q -p no:cacheprovider
+
+Evidence and deck tests are skipped while `demo.yml` has `status: scaffold` and are enforced from `status: built`.
 
 ## Development
 
