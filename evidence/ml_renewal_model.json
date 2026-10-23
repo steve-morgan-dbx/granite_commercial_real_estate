@@ -1,0 +1,92 @@
+{
+  "collected_at_utc": "2026-10-22T21:14:46+00:00",
+  "model": "smmorgan_catalog.granite_commercial_real_estate.renewal_propensity",
+  "latest_version": 3,
+  "status": "READY",
+  "metrics": {
+    "base_renewal_rate": 0.612,
+    "test_auc": 0.7146926536731634,
+    "test_brier": 0.21198991175175844,
+    "test_rows": 375,
+    "train_rows": 1125
+  },
+  "params": {
+    "learning_rate": "0.05",
+    "max_depth": "3",
+    "max_iter": "300",
+    "random_state": "7"
+  },
+  "scores_by_fund": [
+    {
+      "fund_id": "GP-FND-001",
+      "leases": "80",
+      "avg_renewal_probability": "0.544",
+      "expected_vacancy_loss_24m": "8801651.0"
+    },
+    {
+      "fund_id": "GP-FND-002",
+      "leases": "106",
+      "avg_renewal_probability": "0.539",
+      "expected_vacancy_loss_24m": "9441970.0"
+    },
+    {
+      "fund_id": "GP-FND-003",
+      "leases": "94",
+      "avg_renewal_probability": "0.54",
+      "expected_vacancy_loss_24m": "1.0123002E7"
+    },
+    {
+      "fund_id": "GP-FND-004",
+      "leases": "111",
+      "avg_renewal_probability": "0.533",
+      "expected_vacancy_loss_24m": "6159336.0"
+    }
+  ],
+  "top_risk_leases": [
+    {
+      "lease_id": "GP-LSE-00150",
+      "tenant_name": "Mesa Manufacturing",
+      "msa": "Phoenix",
+      "lease_end": "2027-01-30",
+      "abr": "5606760.0",
+      "renewal_probability": "0.035",
+      "expected_vacancy_loss": "4057893.0"
+    },
+    {
+      "lease_id": "GP-LSE-00278",
+      "tenant_name": "Mesa Legal Group",
+      "msa": "Las Vegas",
+      "lease_end": "2027-07-08",
+      "abr": "3534773.0",
+      "renewal_probability": "0.0517",
+      "expected_vacancy_loss": "2514019.0"
+    },
+    {
+      "lease_id": "GP-LSE-00077",
+      "tenant_name": "Falcon Advisors",
+      "msa": "Denver",
+      "lease_end": "2027-07-25",
+      "abr": "2480637.0",
+      "renewal_probability": "0.1093",
+      "expected_vacancy_loss": "1657127.0"
+    },
+    {
+      "lease_id": "GP-LSE-00338",
+      "tenant_name": "Silver Partners",
+      "msa": "Seattle",
+      "lease_end": "2027-03-21",
+      "abr": "2581028.0",
+      "renewal_probability": "0.2079",
+      "expected_vacancy_loss": "1533324.0"
+    },
+    {
+      "lease_id": "GP-LSE-00023",
+      "tenant_name": "Summit Materials",
+      "msa": "Salt Lake City",
+      "lease_end": "2028-04-11",
+      "abr": "4196163.0",
+      "renewal_probability": "0.529",
+      "expected_vacancy_loss": "1482295.0"
+    }
+  ]
+}

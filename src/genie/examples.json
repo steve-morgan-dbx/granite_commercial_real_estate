@@ -1,0 +1,22 @@
+[
+  {
+    "question": "What is total ABR and WALT by property type?",
+    "sql": "SELECT property_type, MEASURE(abr) AS abr, MEASURE(walt_years) AS walt_years\nFROM ${uc_schema}.portfolio_metrics\nGROUP BY property_type",
+    "usage_guidance": "Use portfolio_metrics with MEASURE() for ABR, WALT, rollover and coverage questions"
+  },
+  {
+    "question": "Which office leases expiring in the next 12 months have a termination right, and what share of office ABR is abstracted?",
+    "sql": "SELECT lease_id, tenant_name, lease_end, annual_base_rent, has_termination_right,\n       AVG(CASE WHEN has_abstract THEN 1.0 ELSE 0.0 END) OVER () AS abstraction_coverage_leases\nFROM ${uc_schema}.rent_roll\nWHERE property_type = 'Office' AND months_to_expiry <= 12\nQUALIFY has_termination_right",
+    "usage_guidance": "Clause questions: filter on clause columns and report abstraction coverage"
+  },
+  {
+    "question": "Which assets are within about 1 km of longitude -111.89, latitude 40.76?",
+    "sql": "SELECT * FROM ${uc_schema}.assets_near(-111.89, 40.76, 3) ORDER BY distance_km",
+    "usage_guidance": "Point proximity: assets_near(lon, lat, k_ring), longitude first; k_ring 3 is about 1 km"
+  },
+  {
+    "question": "Show monthly occupancy for the Southwest region this year.",
+    "sql": "SELECT period_month, MEASURE(occupancy_rate) AS occupancy_rate\nFROM ${uc_schema}.occupancy_metrics\nWHERE region = 'Southwest' AND period_year = 2026\nGROUP BY period_month ORDER BY period_month",
+    "usage_guidance": "Occupancy over time comes from occupancy_metrics"
+  }
+]

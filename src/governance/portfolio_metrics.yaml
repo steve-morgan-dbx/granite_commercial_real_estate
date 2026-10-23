@@ -1,0 +1,97 @@
+version: 1.1
+comment: >-
+  Granite Peak portfolio lease KPIs on active leases (rent_roll). Rows follow the fund row filter.
+  Clause measures cover abstracted leases only; report abstraction coverage alongside them.
+source: ${uc_schema}.rent_roll
+dimensions:
+  - name: fund_id
+    expr: fund_id
+    display_name: Fund
+    comment: GP-FND-001 = GP Fund I, GP-FND-002 = GP Fund II, GP-FND-003 = GP Fund III, GP-FND-004 = GP Opportunity IV
+  - name: property_id
+    expr: property_id
+    display_name: Property ID
+  - name: property_name
+    expr: property_name
+    display_name: Property
+  - name: property_type
+    expr: property_type
+    display_name: Property Type
+    synonyms: [asset type, sector]
+  - name: msa
+    expr: msa
+    display_name: MSA
+    synonyms: [market, metro]
+  - name: region
+    expr: region
+    display_name: Region
+    comment: Pacific Northwest (WA, OR, ID), Mountain (UT, CO, NM), Southwest (AZ, NV)
+  - name: state
+    expr: state
+    display_name: State
+  - name: tenant_name
+    expr: tenant_name
+    display_name: Tenant
+  - name: credit_rating
+    expr: credit_rating
+    display_name: Tenant Credit Rating
+  - name: expiry_year
+    expr: YEAR(lease_end)
+    display_name: Expiry Year
+  - name: expiry_quarter
+    expr: DATE_TRUNC('QUARTER', lease_end)
+    display_name: Expiry Quarter
+  - name: has_abstract
+    expr: has_abstract
+    display_name: Has Abstract
+  - name: has_co_tenancy
+    expr: has_co_tenancy
+    display_name: Has Co-Tenancy Clause
+  - name: has_termination_right
+    expr: has_termination_right
+    display_name: Has Termination Right
+measures:
+  - name: abr
+    expr: SUM(annual_base_rent)
+    display_name: Annualized Base Rent
+    synonyms: [ABR, base rent, annual rent, rent]
+    format:
+      type: currency
+      currency_code: USD
+  - name: lease_count
+    expr: COUNT(1)
+    display_name: Lease Count
+  - name: leased_sqft
+    expr: SUM(unit_sqft)
+    display_name: Leased Square Feet
+    synonyms: [leased SF, GLA]
+  - name: walt_years
+    expr: SUM(annual_base_rent * months_to_expiry) / SUM(annual_base_rent) / 12
+    display_name: WALT (Years)
+    synonyms: [weighted average lease term, WALT, weighted average remaining lease term]
+    comment: ABR-weighted average remaining lease term, in years
+  - name: abr_expiring_24m
+    expr: SUM(annual_base_rent) FILTER (WHERE months_to_expiry <= 24)
+    display_name: ABR Expiring Within 24 Months
+    synonyms: [rent rolling in 24 months, rollover ABR]
+    format:
+      type: currency
+      currency_code: USD
+  - name: pct_abr_expiring_24m
+    expr: SUM(annual_base_rent) FILTER (WHERE months_to_expiry <= 24) / SUM(annual_base_rent)
+    display_name: Percent of ABR Expiring Within 24 Months
+    synonyms: [rollover percentage, percent of rent rolling]
+    format:
+      type: percentage
+  - name: abstraction_coverage_leases
+    expr: AVG(CASE WHEN has_abstract THEN 1.0 ELSE 0.0 END)
+    display_name: Abstraction Coverage (Leases)
+    comment: Share of active leases with an abstracted lease document
+    format:
+      type: percentage
+  - name: abstraction_coverage_abr
+    expr: SUM(annual_base_rent) FILTER (WHERE has_abstract) / SUM(annual_base_rent)
+    display_name: Abstraction Coverage (ABR)
+    comment: Share of ABR covered by abstracted lease documents
+    format:
+      type: percentage

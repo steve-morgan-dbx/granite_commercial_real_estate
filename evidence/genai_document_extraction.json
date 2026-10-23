@@ -1,0 +1,82 @@
+{
+  "collected_at_utc": "2026-10-22T21:14:44+00:00",
+  "method": "ai_parse_document (v2.0) + ai_extract (v2.1) inside the Lakeflow pipeline",
+  "field_accuracy_vs_ground_truth": {
+    "documents": "116",
+    "tenant_name": "1.0000",
+    "lease_start": "1.0000",
+    "lease_end": "1.0000",
+    "monthly_rent": "1.0000",
+    "security_deposit": "1.0000",
+    "escalation_type": "1.0000",
+    "renewal_option_count": "1.0000",
+    "has_co_tenancy": "1.0000",
+    "has_termination_right": "1.0000",
+    "termination_right_date": "1.0000",
+    "has_exclusive_use": "1.0000"
+  },
+  "discrepancy_detection": {
+    "planted_discrepancies": "11",
+    "planted_detected": "11",
+    "erp_amendments_detected": "5",
+    "unexplained_flags": "0"
+  },
+  "deal_documents": [
+    {
+      "doc_type": "OM",
+      "docs": "13",
+      "with_asking_price": "13",
+      "in_place_leases_extracted": "63"
+    },
+    {
+      "doc_type": "RentRoll",
+      "docs": "13",
+      "with_asking_price": "0",
+      "in_place_leases_extracted": "63"
+    }
+  ],
+  "sample_abstract": [
+    {
+      "lease_id": "GP-LSE-00044",
+      "tenant_name": "Horizon Market",
+      "lease_start": "2017-02-13",
+      "lease_end": "2027-02-11",
+      "monthly_rent": "24133.16",
+      "renewal_option_count": "0",
+      "has_co_tenancy": "true",
+      "co_tenancy_terms": "Anchor tenant must maintain 61% occupancy.",
+      "has_termination_right": "false",
+      "termination_right_date": null,
+      "abstract_confidence": "1.00",
+      "review_status": "extracted"
+    },
+    {
+      "lease_id": "GP-LSE-00069",
+      "tenant_name": "Cascade Technologies",
+      "lease_start": "2025-10-21",
+      "lease_end": "2028-10-20",
+      "monthly_rent": "377877.73",
+      "renewal_option_count": "0",
+      "has_co_tenancy": "true",
+      "co_tenancy_terms": "Anchor tenant must maintain 68% occupancy.",
+      "has_termination_right": "true",
+      "termination_right_date": "2028-02-27",
+      "abstract_confidence": "1.00",
+      "review_status": "extracted"
+    },
+    {
+      "lease_id": "GP-LSE-00080",
+      "tenant_name": "Aspen Advisors",
+      "lease_start": "2018-03-27",
+      "lease_end": "2028-03-24",
+      "monthly_rent": "32078.7",
+      "renewal_option_count": "2",
+      "has_co_tenancy": "true",
+      "co_tenancy_terms": "Anchor tenant must maintain 80% occupancy.",
+      "has_termination_right": "true",
+      "termination_right_date": "2027-10-05",
+      "abstract_confidence": "1.00",
+      "review_status": "extracted"
+    }
+  ]
+}

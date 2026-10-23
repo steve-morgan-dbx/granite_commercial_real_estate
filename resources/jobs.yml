@@ -1,0 +1,92 @@
+resources:
+  jobs:
+    granite_build:
+      name: Granite Peak CRE - build
+      description: Create the schema, volumes and access model, generate synthetic ERP data and documents, fully refresh the pipeline, then build the semantic layer, score the renewal model, sync Lakebase and build the Genie space.
+      max_concurrent_runs: 1
+      tasks:
+        - task_key: setup
+          notebook_task:
+            notebook_path: ../notebooks/00_setup.ipynb
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+        - task_key: governance
+          depends_on:
+            - task_key: setup
+          notebook_task:
+            notebook_path: ../notebooks/03_governance.ipynb
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+        - task_key: generate_synthetic_data
+          depends_on:
+            - task_key: governance
+          notebook_task:
+            notebook_path: ../notebooks/01_generate_synthetic_data.ipynb
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+        - task_key: refresh_pipeline
+          depends_on:
+            - task_key: generate_synthetic_data
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.granite_cre_pipeline.id}
+            full_refresh: true
+        - task_key: semantic_layer
+          depends_on:
+            - task_key: refresh_pipeline
+          notebook_task:
+            notebook_path: ../notebooks/04_semantic_layer.ipynb
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+        - task_key: renewal_model
+          depends_on:
+            - task_key: refresh_pipeline
+          notebook_task:
+            notebook_path: ../notebooks/05_renewal_model.ipynb
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+        - task_key: lakebase
+          depends_on:
+            - task_key: renewal_model
+          notebook_task:
+            notebook_path: ../notebooks/06_lakebase.ipynb
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+        - task_key: genie_space
+          depends_on:
+            - task_key: semantic_layer
+            - task_key: renewal_model
+          notebook_task:
+            notebook_path: ../notebooks/07_genie_space.ipynb
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+
+    granite_ingest_overture:
+      name: Granite Peak CRE - ingest Overture Maps
+      description: One-time download of Overture Maps places, buildings and divisions for the Granite Peak MSAs into the landing volume.
+      max_concurrent_runs: 1
+      tasks:
+        - task_key: ingest_overture
+          notebook_task:
+            notebook_path: ../notebooks/02_ingest_overture.ipynb
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+
+    granite_app_permissions:
+      name: Granite Peak CRE - app permissions
+      description: Grant the Databricks App service principal Unity Catalog and Lakebase Postgres access (run after deploying the app).
+      max_concurrent_runs: 1
+      tasks:
+        - task_key: app_permissions
+          notebook_task:
+            notebook_path: ../notebooks/08_app_permissions.ipynb
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}

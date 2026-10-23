@@ -1,4 +1,5 @@
 -- Bronze: Overture Maps open data (parquet) via Auto Loader
+-- ${landing_root} is set in the pipeline configuration (see resources/pipeline.yml).
 
 CREATE OR REFRESH STREAMING TABLE bronze_overture_places
 AS SELECT
@@ -9,7 +10,7 @@ AS SELECT
   confidence,
   bbox
 FROM STREAM(read_files(
-  '/Volumes/smmorgan_catalog/granite_commercial_real_estate/landing/overture/places/',
+  '${landing_root}/overture/places/',
   format => 'parquet'
 ));
 
@@ -24,7 +25,7 @@ AS SELECT
   class,
   bbox
 FROM STREAM(read_files(
-  '/Volumes/smmorgan_catalog/granite_commercial_real_estate/landing/overture/buildings/',
+  '${landing_root}/overture/buildings/',
   format => 'parquet'
 ));
 
@@ -36,6 +37,20 @@ AS SELECT
   subtype,
   bbox
 FROM STREAM(read_files(
-  '/Volumes/smmorgan_catalog/granite_commercial_real_estate/landing/overture/divisions/',
+  '${landing_root}/overture/divisions/',
+  format => 'parquet'
+));
+
+CREATE OR REFRESH STREAMING TABLE bronze_overture_division_areas
+COMMENT 'Overture division_area polygons (neighborhood, macrohood, locality)'
+AS SELECT
+  id,
+  geometry,
+  names.primary AS name_primary,
+  subtype,
+  region,
+  bbox
+FROM STREAM(read_files(
+  '${landing_root}/overture/division_areas/',
   format => 'parquet'
 ));

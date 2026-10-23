@@ -1,0 +1,43 @@
+version: 1.1
+comment: >-
+  Granite Peak monthly physical occupancy (leased SF / total SF) from billed base rent, 24 months of history.
+  Rows follow the fund row filter.
+source: ${uc_schema}.occupancy_monthly
+dimensions:
+  - name: period_month
+    expr: period_month
+    display_name: Month
+  - name: period_year
+    expr: YEAR(period_month)
+    display_name: Year
+  - name: fund_id
+    expr: fund_id
+    display_name: Fund
+  - name: property_id
+    expr: property_id
+    display_name: Property ID
+  - name: property_type
+    expr: property_type
+    display_name: Property Type
+  - name: msa
+    expr: msa
+    display_name: MSA
+    synonyms: [market, metro]
+  - name: region
+    expr: region
+    display_name: Region
+    comment: Pacific Northwest (WA, OR, ID), Mountain (UT, CO, NM), Southwest (AZ, NV)
+  - name: state
+    expr: state
+    display_name: State
+measures:
+  - name: occupancy_rate
+    expr: SUM(leased_sqft) / SUM(total_sqft)
+    display_name: Occupancy Rate
+    synonyms: [occupancy, physical occupancy, percent leased]
+    comment: Leased square feet divided by total square feet, averaged over the months in scope
+    format:
+      type: percentage
+  - name: leased_sqft
+    expr: SUM(leased_sqft)
+    display_name: Leased Square Feet (summed over months)

@@ -1,0 +1,5 @@
+streamlit>=1.45
+pydeck>=0.9
+pandas>=2.2
+psycopg[binary]>=3.1
+databricks-sdk>=0.60

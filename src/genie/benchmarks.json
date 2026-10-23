@@ -1,0 +1,57 @@
+[
+  {
+    "id": "b01",
+    "question": "Show acquisitions in the pipeline over $50M by property type and market.",
+    "sql": "SELECT property_type, market, COUNT(*) AS deals, SUM(ask_price) AS total_ask_price\nFROM ${uc_schema}.deal_pipeline\nWHERE deal_type = 'Acquisition' AND ask_price > 50000000\n  AND stage IN ('Screening', 'LOI', 'Due Diligence', 'Under Contract')\nGROUP BY property_type, market\nORDER BY total_ask_price DESC"
+  },
+  {
+    "id": "b02",
+    "question": "Which held assets have more than 20% of rent rolling in the next 24 months?",
+    "sql": "SELECT property_id, property_name, MEASURE(pct_abr_expiring_24m) AS pct_abr_expiring_24m\nFROM ${uc_schema}.portfolio_metrics\nGROUP BY property_id, property_name\nHAVING MEASURE(pct_abr_expiring_24m) > 0.2\nORDER BY pct_abr_expiring_24m DESC"
+  },
+  {
+    "id": "b03",
+    "question": "Compare occupancy this year vs last year by region.",
+    "sql": "SELECT region, period_year, MEASURE(occupancy_rate) AS occupancy_rate\nFROM ${uc_schema}.occupancy_metrics\nWHERE period_year IN (2025, 2026)\nGROUP BY region, period_year\nORDER BY region, period_year"
+  },
+  {
+    "id": "b04",
+    "question": "Which retail assets have more than 25% of ABR expiring within 24 months and a co-tenancy clause?",
+    "sql": "SELECT property_id, property_name,\n       SUM(annual_base_rent) FILTER (WHERE months_to_expiry <= 24) / SUM(annual_base_rent) AS pct_abr_expiring_24m\nFROM ${uc_schema}.rent_roll\nWHERE property_type = 'Retail'\nGROUP BY property_id, property_name\nHAVING SUM(annual_base_rent) FILTER (WHERE months_to_expiry <= 24) / SUM(annual_base_rent) > 0.25\n   AND MAX(CASE WHEN has_co_tenancy THEN 1 ELSE 0 END) = 1\nORDER BY pct_abr_expiring_24m DESC"
+  },
+  {
+    "id": "b05",
+    "question": "For every property with a lease expiring in 2027, how many retail POIs are within about 1 km?",
+    "sql": "SELECT DISTINCT r.property_id, r.property_name, m.retail_count\nFROM ${uc_schema}.rent_roll r\nJOIN ${uc_schema}.h3_market_context m ON r.property_id = m.property_id\nWHERE YEAR(r.lease_end) = 2027\nORDER BY m.retail_count DESC"
+  },
+  {
+    "id": "b06",
+    "question": "Show leases where the abstracted expiration date disagrees with the ERP.",
+    "sql": "SELECT lease_id, abstract_tenant, erp_lease_end, abstract_lease_end\nFROM ${uc_schema}.lease_discrepancies\nWHERE expiration_mismatch\nORDER BY lease_id"
+  },
+  {
+    "id": "b07",
+    "question": "What's the WALT by fund and MSA?",
+    "sql": "SELECT fund_id, msa, MEASURE(walt_years) AS walt_years\nFROM ${uc_schema}.portfolio_metrics\nGROUP BY fund_id, msa\nORDER BY fund_id, msa"
+  },
+  {
+    "id": "b08",
+    "question": "Which tenants with termination rights in the next 18 months have renewal probability below 40%?",
+    "sql": "SELECT r.tenant_name, r.lease_id, r.termination_right_date, s.renewal_probability\nFROM ${uc_schema}.rent_roll r\nJOIN ${uc_schema}.renewal_scores s ON r.lease_id = s.lease_id\nWHERE r.has_termination_right\n  AND r.termination_right_date <= add_months(DATE'2026-10-01', 18)\n  AND s.renewal_probability < 0.4\nORDER BY s.renewal_probability"
+  },
+  {
+    "id": "b09",
+    "question": "For deal GP-ACQ-014, which held assets are within about 2 km, and what's their occupancy?",
+    "sql": "SELECT property_id, property_name, distance_km, occupancy_rate\nFROM ${uc_schema}.assets_near_deal('GP-ACQ-014', 7)\nORDER BY distance_km"
+  },
+  {
+    "id": "b10",
+    "question": "What renewal options and co-tenancy clauses appear across the in-place leases in deal GP-ACQ-014's offering memorandum?",
+    "sql": "SELECT tenant_name, renewal_options, has_co_tenancy, co_tenancy_terms\nFROM ${uc_schema}.deal_lease_terms\nWHERE deal_id = 'GP-ACQ-014' AND doc_type = 'OM'\nORDER BY tenant_name"
+  },
+  {
+    "id": "b11",
+    "question": "How many assets, and how much ABR, are in each Salt Lake City neighborhood?",
+    "sql": "SELECT coalesce(n.neighborhood, 'Unassigned') AS neighborhood, COUNT(DISTINCT p.property_id) AS assets, SUM(p.abr) AS abr\nFROM ${uc_schema}.property_360 p\nJOIN ${uc_schema}.property_neighborhood n ON p.property_id = n.property_id\nWHERE p.msa = 'Salt Lake City'\nGROUP BY coalesce(n.neighborhood, 'Unassigned')\nORDER BY abr DESC"
+  }
+]

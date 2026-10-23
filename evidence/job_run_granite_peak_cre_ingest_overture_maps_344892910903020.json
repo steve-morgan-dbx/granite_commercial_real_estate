@@ -1,0 +1,15 @@
+{
+  "job_name": "Granite Peak CRE - ingest Overture Maps",
+  "run_id": 344892910903020,
+  "result_state": "SUCCESS",
+  "start_time_utc": "2026-10-22T19:54:53+00:00",
+  "tasks": [
+    {
+      "task_key": "ingest_overture",
+      "result_state": "SUCCESS",
+      "duration_s": 44,
+      "notebook": "notebooks/02_ingest_overture.ipynb",
+      "cells_with_output": 4
+    }
+  ]
+}

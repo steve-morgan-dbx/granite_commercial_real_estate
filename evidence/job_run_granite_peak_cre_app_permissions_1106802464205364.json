@@ -1,0 +1,15 @@
+{
+  "job_name": "Granite Peak CRE - app permissions",
+  "run_id": 1106802464205364,
+  "result_state": "SUCCESS",
+  "start_time_utc": "2026-10-22T21:11:51+00:00",
+  "tasks": [
+    {
+      "task_key": "app_permissions",
+      "result_state": "SUCCESS",
+      "duration_s": 39,
+      "notebook": "notebooks/08_app_permissions.ipynb",
+      "cells_with_output": 4
+    }
+  ]
+}

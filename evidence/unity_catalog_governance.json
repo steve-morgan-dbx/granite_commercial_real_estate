@@ -1,0 +1,539 @@
+{
+  "collected_at_utc": "2026-10-22T21:14:37+00:00",
+  "row_filters": [
+    {
+      "table_name": "occupancy_monthly",
+      "filter_name": "smmorgan_catalog.granite_commercial_real_estate.fund_row_filter",
+      "target_columns": "fund_id"
+    },
+    {
+      "table_name": "rent_roll",
+      "filter_name": "smmorgan_catalog.granite_commercial_real_estate.fund_row_filter",
+      "target_columns": "fund_id"
+    },
+    {
+      "table_name": "rollover_schedule",
+      "filter_name": "smmorgan_catalog.granite_commercial_real_estate.fund_row_filter",
+      "target_columns": "fund_id"
+    }
+  ],
+  "column_masks": [
+    {
+      "table_name": "tenant_directory",
+      "column_name": "contact_email",
+      "mask_name": "smmorgan_catalog.granite_commercial_real_estate.mask_contact"
+    },
+    {
+      "table_name": "tenant_directory",
+      "column_name": "contact_name",
+      "mask_name": "smmorgan_catalog.granite_commercial_real_estate.mask_contact"
+    },
+    {
+      "table_name": "tenant_directory",
+      "column_name": "contact_phone",
+      "mask_name": "smmorgan_catalog.granite_commercial_real_estate.mask_contact"
+    }
+  ],
+  "column_tags": [
+    {
+      "table_name": "tenant_directory",
+      "column_name": "contact_email",
+      "tag_name": "class.email_address",
+      "tag_value": ""
+    },
+    {
+      "table_name": "tenant_directory",
+      "column_name": "contact_name",
+      "tag_name": "class.name",
+      "tag_value": ""
+    },
+    {
+      "table_name": "tenant_directory",
+      "column_name": "contact_phone",
+      "tag_name": "class.phone_number",
+      "tag_value": ""
+    }
+  ],
+  "table_tags": [
+    {
+      "table_name": "lease_abstract",
+      "tag_name": "classification",
+      "tag_value": "confidential"
+    },
+    {
+      "table_name": "lease_discrepancies",
+      "tag_name": "classification",
+      "tag_value": "confidential"
+    },
+    {
+      "table_name": "rent_roll",
+      "tag_name": "classification",
+      "tag_value": "confidential"
+    },
+    {
+      "table_name": "tenant_directory",
+      "tag_name": "classification",
+      "tag_value": "confidential"
+    }
+  ],
+  "fund_access": [
+    {
+      "group_name": "granite_fund_i_analysts",
+      "fund_id": "GP-FND-001"
+    },
+    {
+      "group_name": "granite_fund_ii_analysts",
+      "fund_id": "GP-FND-002"
+    },
+    {
+      "group_name": "granite_fund_iii_analysts",
+      "fund_id": "GP-FND-003"
+    },
+    {
+      "group_name": "granite_fund_iv_analysts",
+      "fund_id": "GP-FND-004"
+    },
+    {
+      "group_name": "granite_portfolio_leadership",
+      "fund_id": "*"
+    }
+  ],
+  "masked_sample": [
+    {
+      "tenant_id": "GP-TNT-00001",
+      "contact_name": "[REDACTED]",
+      "contact_email": "[REDACTED]"
+    },
+    {
+      "tenant_id": "GP-TNT-00002",
+      "contact_name": "[REDACTED]",
+      "contact_email": "[REDACTED]"
+    },
+    {
+      "tenant_id": "GP-TNT-00003",
+      "contact_name": "[REDACTED]",
+      "contact_email": "[REDACTED]"
+    }
+  ],
+  "lineage_into_gold": [
+    {
+      "source_table_name": "silver_deal_extract",
+      "target_table_name": "deal_abstract"
+    },
+    {
+      "source_table_name": "silver_deal_extract",
+      "target_table_name": "deal_lease_terms"
+    },
+    {
+      "source_table_name": "silver_deal",
+      "target_table_name": "deal_pipeline"
+    },
+    {
+      "source_table_name": "property_h3",
+      "target_table_name": "h3_market_context"
+    },
+    {
+      "source_table_name": "silver_overture_places_h3",
+      "target_table_name": "h3_market_context"
+    },
+    {
+      "source_table_name": "abstract_review",
+      "target_table_name": "lease_abstract"
+    },
+    {
+      "source_table_name": "silver_lease_extract",
+      "target_table_name": "lease_abstract"
+    },
+    {
+      "source_table_name": "lease_abstract",
+      "target_table_name": "lease_abstract_synced"
+    },
+    {
+      "source_table_name": "lease_abstract",
+      "target_table_name": "lease_discrepancies"
+    },
+    {
+      "source_table_name": "silver_commlease",
+      "target_table_name": "lease_discrepancies"
+    },
+    {
+      "source_table_name": "silver_lease_extract",
+      "target_table_name": "lease_discrepancies"
+    },
+    {
+      "source_table_name": "lease_discrepancies",
+      "target_table_name": "lease_discrepancies_synced"
+    },
+    {
+      "source_table_name": "occupancy_monthly",
+      "target_table_name": "occupancy_metrics"
+    },
+    {
+      "source_table_name": "property_h3",
+      "target_table_name": "occupancy_monthly"
+    },
+    {
+      "source_table_name": "silver_commlease",
+      "target_table_name": "occupancy_monthly"
+    },
+    {
+      "source_table_name": "silver_lease_charges",
+      "target_table_name": "occupancy_monthly"
+    },
+    {
+      "source_table_name": "silver_unit",
+      "target_table_name": "occupancy_monthly"
+    },
+    {
+      "source_table_name": "rent_roll",
+      "target_table_name": "portfolio_metrics"
+    },
+    {
+      "source_table_name": "h3_market_context",
+      "target_table_name": "property_360"
+    },
+    {
+      "source_table_name": "property_h3",
+      "target_table_name": "property_360"
+    },
+    {
+      "source_table_name": "property_neighborhood",
+      "target_table_name": "property_360"
+    },
+    {
+      "source_table_name": "silver_commlease",
+      "target_table_name": "property_360"
+    },
+    {
+      "source_table_name": "silver_unit",
+      "target_table_name": "property_360"
+    },
+    {
+      "source_table_name": "property_360",
+      "target_table_name": "property_360_synced"
+    },
+    {
+      "source_table_name": "silver_property",
+      "target_table_name": "property_h3"
+    },
+    {
+      "source_table_name": "bronze_overture_division_areas",
+      "target_table_name": "property_neighborhood"
+    },
+    {
+      "source_table_name": "property_h3",
+      "target_table_name": "property_neighborhood"
+    },
+    {
+      "source_table_name": "silver_commlease",
+      "target_table_name": "renewal_scores"
+    },
+    {
+      "source_table_name": "renewal_scores",
+      "target_table_name": "renewal_scores_synced"
+    },
+    {
+      "source_table_name": "lease_abstract",
+      "target_table_name": "rent_roll"
+    },
+    {
+      "source_table_name": "property_h3",
+      "target_table_name": "rent_roll"
+    },
+    {
+      "source_table_name": "silver_commlease",
+      "target_table_name": "rent_roll"
+    },
+    {
+      "source_table_name": "silver_lease_extract",
+      "target_table_name": "rent_roll"
+    },
+    {
+      "source_table_name": "silver_property",
+      "target_table_name": "rent_roll"
+    },
+    {
+      "source_table_name": "silver_tenant",
+      "target_table_name": "rent_roll"
+    },
+    {
+      "source_table_name": "silver_unit",
+      "target_table_name": "rent_roll"
+    },
+    {
+      "source_table_name": "rent_roll",
+      "target_table_name": "rollover_schedule"
+    },
+    {
+      "source_table_name": "bronze_commlease",
+      "target_table_name": "silver_commlease"
+    },
+    {
+      "source_table_name": "bronze_commlease",
+      "target_table_name": "silver_commlease_history"
+    },
+    {
+      "source_table_name": "bronze_deal",
+      "target_table_name": "silver_deal"
+    },
+    {
+      "source_table_name": "bronze_deal_comps",
+      "target_table_name": "silver_deal_comps"
+    },
+    {
+      "source_table_name": "silver_deal_text",
+      "target_table_name": "silver_deal_extract"
+    },
+    {
+      "source_table_name": "bronze_deal_docs",
+      "target_table_name": "silver_deal_text"
+    },
+    {
+      "source_table_name": "bronze_fund",
+      "target_table_name": "silver_fund"
+    },
+    {
+      "source_table_name": "bronze_gl_actuals",
+      "target_table_name": "silver_gl_actuals"
+    },
+    {
+      "source_table_name": "bronze_lease_charges",
+      "target_table_name": "silver_lease_charges"
+    },
+    {
+      "source_table_name": "silver_lease_text",
+      "target_table_name": "silver_lease_extract"
+    },
+    {
+      "source_table_name": "bronze_lease_docs",
+      "target_table_name": "silver_lease_text"
+    },
+    {
+      "source_table_name": "bronze_overture_places",
+      "target_table_name": "silver_overture_places_h3"
+    },
+    {
+      "source_table_name": "bronze_property",
+      "target_table_name": "silver_property"
+    },
+    {
+      "source_table_name": "bronze_tenant",
+      "target_table_name": "silver_tenant"
+    },
+    {
+      "source_table_name": "bronze_unit",
+      "target_table_name": "silver_unit"
+    },
+    {
+      "source_table_name": "silver_tenant",
+      "target_table_name": "tenant_directory"
+    }
+  ],
+  "table_comments": [
+    {
+      "table_name": "__materialization_mat_d79d44e3_1842_4128_a54c_5812217c3720_bronze_overture_division_areas_1",
+      "table_type": "MANAGED",
+      "comment": "Overture division_area polygons (neighborhood, macrohood, locality)"
+    },
+    {
+      "table_name": "__materialization_mat_d79d44e3_1842_4128_a54c_5812217c3720_deal_abstract_1",
+      "table_type": "MANAGED",
+      "comment": "Deal financials and in-place lease terms extracted from offering memoranda and rent rolls"
+    },
+    {
+      "table_name": "__materialization_mat_d79d44e3_1842_4128_a54c_5812217c3720_deal_lease_terms_1",
+      "table_type": "MANAGED",
+      "comment": "In-place leases extracted from deal offering memoranda (OM) and rent rolls (RentRoll): tenant, ABR, expiry, renewal options, co-tenancy"
+    },
+    {
+      "table_name": "__materialization_mat_d79d44e3_1842_4128_a54c_5812217c3720_deal_pipeline_1",
+      "table_type": "MANAGED",
+      "comment": "Acquisition and disposition pipeline with H3 cells"
+    },
+    {
+      "table_name": "__materialization_mat_d79d44e3_1842_4128_a54c_5812217c3720_h3_market_context_1",
+      "table_type": "MANAGED",
+      "comment": "Overture POI counts within ~1 km (H3 res-9 k-ring of 3) of each property; competitor_count matches the property type"
+    },
+    {
+      "table_name": "__materialization_mat_d79d44e3_1842_4128_a54c_5812217c3720_lease_abstract_1",
+      "table_type": "MANAGED",
+      "comment": "Lease terms extracted from lease PDFs with ai_parse_document + ai_extract; approved analyst corrections override extracted values"
+    },
+    {
+      "table_name": "__materialization_mat_d79d44e3_1842_4128_a54c_5812217c3720_lease_discrepancies_1",
+      "table_type": "MANAGED",
+      "comment": "Leases whose PDF terms disagree with the ERP (expiration date or monthly rent)"
+    },
+    {
+      "table_name": "__materialization_mat_d79d44e3_1842_4128_a54c_5812217c3720_occupancy_monthly_1",
+      "table_type": "MANAGED",
+      "comment": "Monthly physical occupancy per property, derived from billed base rent (24 months of history)"
+    },
+    {
+      "table_name": "__materialization_mat_d79d44e3_1842_4128_a54c_5812217c3720_property_360_1",
+      "table_type": "MANAGED",
+      "comment": "Property summary for operational serving (Lakebase): occupancy, ABR, WALT, rollover, H3 market context, neighborhood"
+    },
+    {
+      "table_name": "__materialization_mat_d79d44e3_1842_4128_a54c_5812217c3720_property_h3_1",
+      "table_type": "MANAGED",
+      "comment": "Properties with H3 res-9 (~175 m edge) and res-7 cells"
+    },
+    {
+      "table_name": "__materialization_mat_d79d44e3_1842_4128_a54c_5812217c3720_property_neighborhood_1",
+      "table_type": "MANAGED",
+      "comment": "Overture neighborhood, macrohood and locality containing each property (exact st_covers test)"
+    },
+    {
+      "table_name": "__materialization_mat_d79d44e3_1842_4128_a54c_5812217c3720_rent_roll_1",
+      "table_type": "MANAGED",
+      "comment": "Active leases as of the reporting date. Clause columns come from lease documents and are NULL when the lease has no abstract (has_abstract = false)"
+    },
+    {
+      "table_name": "__materialization_mat_d79d44e3_1842_4128_a54c_5812217c3720_rollover_schedule_1",
+      "table_type": "MANAGED",
+      "comment": "Annualized base rent and square feet expiring per quarter, by fund, property type and MSA"
+    },
+    {
+      "table_name": "__materialization_mat_d79d44e3_1842_4128_a54c_5812217c3720_silver_commlease_history_1",
+      "table_type": "MANAGED",
+      "comment": "Lease history from ERP CDC (SCD Type 2): one row per version, __START_AT / __END_AT validity"
+    },
+    {
+      "table_name": "__materialization_mat_d79d44e3_1842_4128_a54c_5812217c3720_silver_overture_places_h3_1",
+      "table_type": "MANAGED",
+      "comment": "Overture Maps places (CDLA Permissive 2.0) with H3 res-9 cells and a POI group"
+    },
+    {
+      "table_name": "__materialization_mat_d79d44e3_1842_4128_a54c_5812217c3720_tenant_directory_1",
+      "table_type": "MANAGED",
+      "comment": "Tenant directory; contact columns are masked for everyone outside granite_pii_readers"
+    },
+    {
+      "table_name": "abstract_review",
+      "table_type": "MANAGED",
+      "comment": "Analyst corrections to extracted lease fields, copied from the Lakebase review table"
+    },
+    {
+      "table_name": "bronze_overture_division_areas",
+      "table_type": "STREAMING_TABLE",
+      "comment": "Overture division_area polygons (neighborhood, macrohood, locality)"
+    },
+    {
+      "table_name": "deal_abstract",
+      "table_type": "MATERIALIZED_VIEW",
+      "comment": "Deal financials and in-place lease terms extracted from offering memoranda and rent rolls"
+    },
+    {
+      "table_name": "deal_lease_terms",
+      "table_type": "MATERIALIZED_VIEW",
+      "comment": "In-place leases extracted from deal offering memoranda (OM) and rent rolls (RentRoll): tenant, ABR, expiry, renewal options, co-tenancy"
+    },
+    {
+      "table_name": "deal_pipeline",
+      "table_type": "MATERIALIZED_VIEW",
+      "comment": "Acquisition and disposition pipeline with H3 cells"
+    },
+    {
+      "table_name": "fund_access",
+      "table_type": "MANAGED",
+      "comment": "Fund entitlements used by fund_row_filter"
+    },
+    {
+      "table_name": "h3_market_context",
+      "table_type": "MATERIALIZED_VIEW",
+      "comment": "Overture POI counts within ~1 km (H3 res-9 k-ring of 3) of each property; competitor_count matches the property type"
+    },
+    {
+      "table_name": "lease_abstract",
+      "table_type": "MATERIALIZED_VIEW",
+      "comment": "Lease terms extracted from lease PDFs with ai_parse_document + ai_extract; approved analyst corrections override extracted values"
+    },
+    {
+      "table_name": "lease_abstract_synced",
+      "table_type": "FOREIGN",
+      "comment": "Database table synced from another UC table"
+    },
+    {
+      "table_name": "lease_discrepancies",
+      "table_type": "MATERIALIZED_VIEW",
+      "comment": "Leases whose PDF terms disagree with the ERP (expiration date or monthly rent)"
+    },
+    {
+      "table_name": "lease_discrepancies_synced",
+      "table_type": "FOREIGN",
+      "comment": "Database table synced from another UC table"
+    },
+    {
+      "table_name": "occupancy_metrics",
+      "table_type": "METRIC_VIEW",
+      "comment": "Granite Peak monthly physical occupancy (leased SF / total SF) from billed base rent, 24 months of history. Rows follow the fund row filter."
+    },
+    {
+      "table_name": "occupancy_monthly",
+      "table_type": "MATERIALIZED_VIEW",
+      "comment": "Monthly physical occupancy per property, derived from billed base rent (24 months of history)"
+    },
+    {
+      "table_name": "portfolio_metrics",
+      "table_type": "METRIC_VIEW",
+      "comment": "Granite Peak portfolio lease KPIs on active leases (rent_roll). Rows follow the fund row filter. Clause measures cover abstracted leases only; report abstraction coverage alongside them."
+    },
+    {
+      "table_name": "property_360",
+      "table_type": "MATERIALIZED_VIEW",
+      "comment": "Property summary for operational serving (Lakebase): occupancy, ABR, WALT, rollover, H3 market context, neighborhood"
+    },
+    {
+      "table_name": "property_360_synced",
+      "table_type": "FOREIGN",
+      "comment": "Database table synced from another UC table"
+    },
+    {
+      "table_name": "property_h3",
+      "table_type": "MATERIALIZED_VIEW",
+      "comment": "Properties with H3 res-9 (~175 m edge) and res-7 cells"
+    },
+    {
+      "table_name": "property_neighborhood",
+      "table_type": "MATERIALIZED_VIEW",
+      "comment": "Overture neighborhood, macrohood and locality containing each property (exact st_covers test)"
+    },
+    {
+      "table_name": "renewal_scores",
+      "table_type": "MANAGED",
+      "comment": "Renewal probability and expected vacancy loss per active lease (model smmorgan_catalog.granite_commercial_real_estate.renewal_propensity); vacancy loss assumes 9 months of downtime"
+    },
+    {
+      "table_name": "renewal_scores_synced",
+      "table_type": "FOREIGN",
+      "comment": "Database table synced from another UC table"
+    },
+    {
+      "table_name": "rent_roll",
+      "table_type": "MATERIALIZED_VIEW",
+      "comment": "Active leases as of the reporting date. Clause columns come from lease documents and are NULL when the lease has no abstract (has_abstract = false)"
+    },
+    {
+      "table_name": "rollover_schedule",
+      "table_type": "MATERIALIZED_VIEW",
+      "comment": "Annualized base rent and square feet expiring per quarter, by fund, property type and MSA"
+    },
+    {
+      "table_name": "silver_commlease_history",
+      "table_type": "STREAMING_TABLE",
+      "comment": "Lease history from ERP CDC (SCD Type 2): one row per version, __START_AT / __END_AT validity"
+    },
+    {
+      "table_name": "silver_overture_places_h3",
+      "table_type": "MATERIALIZED_VIEW",
+      "comment": "Overture Maps places (CDLA Permissive 2.0) with H3 res-9 cells and a POI group"
+    },
+    {
+      "table_name": "tenant_directory",
+      "table_type": "MATERIALIZED_VIEW",
+      "comment": "Tenant directory; contact columns are masked for everyone outside granite_pii_readers"
+    }
+  ]
+}

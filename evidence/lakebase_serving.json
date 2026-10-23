@@ -1,0 +1,33 @@
+{
+  "collected_at_utc": "2026-10-22T21:14:53+00:00",
+  "instance": {
+    "name": "granite-cre",
+    "state": "AVAILABLE",
+    "capacity": "CU_1",
+    "pg_version": "PG_VERSION_16"
+  },
+  "synced_tables": {
+    "property_360": {
+      "state": "SYNCED_TABLE_ONLINE_NO_PENDING_UPDATE",
+      "source": "smmorgan_catalog.granite_commercial_real_estate.property_360",
+      "policy": "SNAPSHOT"
+    },
+    "lease_abstract": {
+      "state": "SYNCED_TABLE_ONLINE_NO_PENDING_UPDATE",
+      "source": "smmorgan_catalog.granite_commercial_real_estate.lease_abstract",
+      "policy": "SNAPSHOT"
+    },
+    "lease_discrepancies": {
+      "state": "SYNCED_TABLE_ONLINE_NO_PENDING_UPDATE",
+      "source": "smmorgan_catalog.granite_commercial_real_estate.lease_discrepancies",
+      "policy": "SNAPSHOT"
+    },
+    "renewal_scores": {
+      "state": "SYNCED_TABLE_ONLINE_NO_PENDING_UPDATE",
+      "source": "smmorgan_catalog.granite_commercial_real_estate.renewal_scores",
+      "policy": "SNAPSHOT"
+    }
+  },
+  "corrections_copied_to_delta": [],
+  "corrections_applied_in_gold": []
+}

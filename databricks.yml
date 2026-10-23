@@ -1,0 +1,33 @@
+# Declarative Automation Bundle for the Granite Peak CRE build.
+# Deploy:  databricks bundle deploy --target dev   (pass --profile for your workspace)
+bundle:
+  name: granite_commercial_real_estate
+
+include:
+  - resources/*.yml
+
+variables:
+  catalog:
+    description: Unity Catalog catalog for all build objects
+    default: smmorgan_catalog
+  schema:
+    description: Schema for all build objects
+    default: granite_commercial_real_estate
+  as_of_date:
+    description: Reporting date used for expiry, rollover and occupancy calculations
+    default: "2026-10-01"
+  warehouse_id:
+    description: Serverless SQL warehouse used by the app and Genie
+    default: ""
+  genie_space_id:
+    description: Genie space created by notebooks/07_genie_space.ipynb
+    default: ""
+
+targets:
+  dev:
+    default: true
+    workspace:
+      root_path: ~/.bundle/${bundle.name}/${bundle.target}
+    variables:
+      warehouse_id: ebe7d321697a8988
+      genie_space_id: 01f1ce5643ff1c4bafd90cea16c1fba7

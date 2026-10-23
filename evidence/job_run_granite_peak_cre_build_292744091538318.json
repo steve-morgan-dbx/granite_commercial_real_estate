@@ -1,0 +1,50 @@
+{
+  "job_name": "Granite Peak CRE - build",
+  "run_id": 292744091538318,
+  "result_state": "SUCCESS",
+  "start_time_utc": "2026-10-22T21:09:28+00:00",
+  "tasks": [
+    {
+      "task_key": "generate_synthetic_data",
+      "result_state": "DISABLED",
+      "duration_s": 0
+    },
+    {
+      "task_key": "setup",
+      "result_state": "DISABLED",
+      "duration_s": 0
+    },
+    {
+      "task_key": "semantic_layer",
+      "result_state": "DISABLED",
+      "duration_s": 0
+    },
+    {
+      "task_key": "lakebase",
+      "result_state": "SUCCESS",
+      "duration_s": 90,
+      "notebook": "notebooks/06_lakebase.ipynb",
+      "cells_with_output": 8
+    },
+    {
+      "task_key": "refresh_pipeline",
+      "result_state": "DISABLED",
+      "duration_s": 0
+    },
+    {
+      "task_key": "genie_space",
+      "result_state": "DISABLED",
+      "duration_s": 0
+    },
+    {
+      "task_key": "renewal_model",
+      "result_state": "DISABLED",
+      "duration_s": 0
+    },
+    {
+      "task_key": "governance",
+      "result_state": "DISABLED",
+      "duration_s": 0
+    }
+  ]
+}

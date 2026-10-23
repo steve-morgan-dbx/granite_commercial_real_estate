@@ -1,0 +1,53 @@
+{
+  "collected_at_utc": "2026-10-22T21:14:55+00:00",
+  "app": {
+    "name": "granite-cre-portfolio",
+    "description": "Granite Peak portfolio map, property 360, lease review with Lakebase writeback, and Genie",
+    "compute_status": {
+      "message": "App compute is running.",
+      "state": "ACTIVE"
+    },
+    "app_status": {
+      "message": "App has status: App is running",
+      "state": "RUNNING"
+    },
+    "resources": [
+      {
+        "name": "sql-warehouse",
+        "sql_warehouse": {
+          "id": "ebe7d321697a8988",
+          "permission": "CAN_USE"
+        }
+      },
+      {
+        "database": {
+          "database_name": "databricks_postgres",
+          "instance_name": "granite-cre",
+          "permission": "CAN_CONNECT_AND_CREATE"
+        },
+        "name": "lakebase"
+      },
+      {
+        "genie_space": {
+          "name": "Granite Peak Portfolio Intelligence",
+          "permission": "CAN_RUN",
+          "space_id": "01f1ce5643ff1c4bafd90cea16c1fba7"
+        },
+        "name": "genie-space"
+      }
+    ],
+    "user_api_scopes": [
+      "dashboards.genie",
+      "sql"
+    ]
+  },
+  "latest_deployment": {
+    "deployment_id": "01f1ce5a354e1e37a3fdf5bc2e4740ef",
+    "status": {
+      "message": "App started successfully",
+      "state": "SUCCEEDED"
+    },
+    "create_time": "2026-10-22T20:50:26Z",
+    "mode": "SNAPSHOT"
+  }
+}

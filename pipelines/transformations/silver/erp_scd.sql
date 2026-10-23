@@ -1,5 +1,5 @@
--- Silver: AUTO CDC (SCD Type 1) from bronze CDC streams
--- Produces latest-state dimension tables keyed on each entity's primary key.
+-- Silver: AUTO CDC from bronze CDC streams
+-- SCD Type 1 latest-state dimensions keyed on each entity's primary key, plus SCD Type 2 lease history.
 
 -- Fund
 CREATE OR REFRESH STREAMING TABLE silver_fund;
@@ -55,6 +55,18 @@ APPLY AS DELETE WHEN header__operation = 'D'
 SEQUENCE BY header__timestamp
 COLUMNS * EXCEPT (header__operation, header__timestamp)
 STORED AS SCD TYPE 1;
+
+-- Commercial Lease history (SCD Type 2): every rent change and term update, with validity windows
+CREATE OR REFRESH STREAMING TABLE silver_commlease_history
+COMMENT 'Lease history from ERP CDC (SCD Type 2): one row per version, __START_AT / __END_AT validity';
+
+CREATE FLOW silver_commlease_history_cdc AS AUTO CDC INTO silver_commlease_history
+FROM STREAM(bronze_commlease)
+KEYS (lease_id)
+APPLY AS DELETE WHEN header__operation = 'D'
+SEQUENCE BY header__timestamp
+COLUMNS * EXCEPT (header__operation, header__timestamp)
+STORED AS SCD TYPE 2;
 
 -- Deal
 CREATE OR REFRESH STREAMING TABLE silver_deal;

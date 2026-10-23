@@ -52,11 +52,12 @@ def _files():
 
 
 def _text_files():
-    # This file holds the patterns being searched for; exclude it (and the scrub script).
+    # This file holds the patterns being searched for; exclude it (and the scrubbers).
     me = pathlib.Path(__file__).resolve()
+    scrubbers = {"scripts/scrub_check.sh", "scripts/export_run_notebooks.py"}  # hold the patterns they remove
     for p in _files():
         if (p.suffix.lower() in TEXT_EXT and p.resolve() != me
-                and p.relative_to(ROOT).as_posix() != "scripts/scrub_check.sh"):
+                and p.relative_to(ROOT).as_posix() not in scrubbers):
             yield p
 
 

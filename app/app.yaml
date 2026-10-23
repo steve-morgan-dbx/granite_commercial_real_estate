@@ -1,0 +1,10 @@
+command: ["streamlit", "run", "app.py", "--server.headless", "true"]
+env:
+  - name: GRANITE_CATALOG
+    value: smmorgan_catalog
+  - name: GRANITE_SCHEMA
+    value: granite_commercial_real_estate
+  - name: LAKEBASE_INSTANCE
+    value: granite-cre
+  - name: GENIE_SPACE_ID
+    valueFrom: genie-space

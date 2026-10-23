@@ -10,7 +10,7 @@ cloud: aws
 catalog: smmorgan_catalog                           # overridable via the notebook 'catalog' widget
 schema: granite_commercial_real_estate              # overridable via the notebook 'schema' widget
 deploy: dab
-status: scaffold                                    # scaffold -> built -> submitted (gates evidence tests)
+status: built                                       # scaffold -> built -> submitted (gates evidence tests)
 entry_notebook: notebooks/00_setup.ipynb
 databricks_features:                                # journey stages (all required) + capabilities
   - lakeflow

@@ -1,0 +1,62 @@
+{
+  "job_name": "Granite Peak CRE - build",
+  "run_id": 301171258817262,
+  "result_state": "SUCCESS",
+  "start_time_utc": "2026-10-22T20:13:07+00:00",
+  "tasks": [
+    {
+      "task_key": "generate_synthetic_data",
+      "result_state": "SUCCESS",
+      "duration_s": 36,
+      "notebook": "notebooks/01_generate_synthetic_data.ipynb",
+      "cells_with_output": 12
+    },
+    {
+      "task_key": "setup",
+      "result_state": "SUCCESS",
+      "duration_s": 28,
+      "notebook": "notebooks/00_setup.ipynb",
+      "cells_with_output": 3
+    },
+    {
+      "task_key": "semantic_layer",
+      "result_state": "SUCCESS",
+      "duration_s": 67,
+      "notebook": "notebooks/04_semantic_layer.ipynb",
+      "cells_with_output": 9
+    },
+    {
+      "task_key": "lakebase",
+      "result_state": "SUCCESS",
+      "duration_s": 111,
+      "notebook": "notebooks/06_lakebase.ipynb",
+      "cells_with_output": 8
+    },
+    {
+      "task_key": "refresh_pipeline",
+      "result_state": "SUCCESS",
+      "duration_s": 343
+    },
+    {
+      "task_key": "genie_space",
+      "result_state": "SUCCESS",
+      "duration_s": 319,
+      "notebook": "notebooks/07_genie_space.ipynb",
+      "cells_with_output": 5
+    },
+    {
+      "task_key": "renewal_model",
+      "result_state": "SUCCESS",
+      "duration_s": 93,
+      "notebook": "notebooks/05_renewal_model.ipynb",
+      "cells_with_output": 7
+    },
+    {
+      "task_key": "governance",
+      "result_state": "SUCCESS",
+      "duration_s": 20,
+      "notebook": "notebooks/03_governance.ipynb",
+      "cells_with_output": 5
+    }
+  ]
+}

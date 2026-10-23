@@ -1,0 +1,26 @@
+# Needs the Genie space created by notebooks/07_genie_space.ipynb: set warehouse_id and genie_space_id
+# for your target in databricks.yml (or pass --var on deploy).
+resources:
+  apps:
+    granite_app:
+      name: granite-cre-portfolio
+      description: Granite Peak portfolio map, property 360, lease review with Lakebase writeback, and Genie
+      source_code_path: ../app
+      user_api_scopes:
+        - dashboards.genie
+        - sql
+      resources:
+        - name: sql-warehouse
+          sql_warehouse:
+            id: ${var.warehouse_id}
+            permission: CAN_USE
+        - name: lakebase
+          database:
+            instance_name: granite-cre
+            database_name: databricks_postgres
+            permission: CAN_CONNECT_AND_CREATE
+        - name: genie-space
+          genie_space:
+            name: Granite Peak Portfolio Intelligence
+            space_id: ${var.genie_space_id}
+            permission: CAN_RUN

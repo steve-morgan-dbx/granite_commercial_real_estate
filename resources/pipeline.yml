@@ -1,0 +1,16 @@
+resources:
+  pipelines:
+    granite_cre_pipeline:
+      name: Granite Peak CRE Pipeline
+      catalog: ${var.catalog}
+      schema: ${var.schema}
+      serverless: true
+      channel: CURRENT
+      root_path: ../pipelines
+      libraries:
+        - glob:
+            include: ../pipelines/transformations/**
+      configuration:
+        landing_root: /Volumes/${var.catalog}/${var.schema}/landing
+        as_of_date: ${var.as_of_date}
+        uc_schema: ${var.catalog}.${var.schema}
