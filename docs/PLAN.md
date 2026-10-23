@@ -45,7 +45,7 @@ Individual features (an H3 function, a document parser, a chat-with-data tool) e
 | **Synthetic ERP extracts** shaped like Yardi Voyager (`property`, `unit`, `tenant`, `commlease`, `lease_charges`, `gl_actuals`) | Generated | Landed as **CDC files in the style of Qlik Replicate** (`header__operation`, `header__timestamp`), which is a common CRE ingest pattern. At least 24 months of history, so year-over-year occupancy (benchmark 3) is answerable |
 | **Synthetic deal pipeline** (`deal`, `deal_comps`) | Generated | Acquisitions/dispositions: stage, property type, market, ask price, cap rate, IRR, lat/lon |
 | **Synthetic deal documents** (~10–15 offering memoranda + rent rolls) | Generated PDFs | Extract asking price, NOI, WALT, tenant list, and the renewal/co-tenancy terms of in-place leases |
-| **Synthetic commercial lease PDFs** (~60–100; office, retail and industrial) | Generated PDFs + ground-truth JSON | Lease abstraction. **Risk-weighted subset:** every commercial lease expiring within 36 months of the as-of date, plus the 25 largest tenants by ABR regardless of expiry (the generator sizes the ERP so this lands at ~60–100). This mirrors how managers prioritize abstraction and gives full answers to benchmarks 4, 5 and 8. Clauses vary on purpose, and ~10% deliberately disagree with the ERP to drive discrepancy detection |
+| **Synthetic commercial lease PDFs** (116 in the build; office, retail and industrial) | Generated PDFs + ground-truth JSON | Lease abstraction. **Risk-weighted subset:** every commercial lease expiring within 24 months of the as-of date, plus the 25 largest tenants by ABR regardless of expiry (116 leases in the build). This mirrors how managers prioritize abstraction and gives full answers to benchmarks 4, 5 and 8. Clauses vary on purpose, and ~10% deliberately disagree with the ERP to drive discrepancy detection |
 | **Overture Maps: Places, Buildings, Divisions** | Public open data, ingested by Lakeflow | POI and competitor density, building footprints, neighborhood/submarket polygons. Downloaded by bounding box for the Granite Peak MSAs → UC volume → Auto Loader |
 | **ATTOM / Cotality** | Databricks Marketplace (licensed) | Not included. Shown as the day-2 enrichment plug-in via Delta Sharing |
 
@@ -104,7 +104,7 @@ Genie joins **document-derived columns** with **H3 spatial context** in a single
   - For exact polygon membership, use `h3_coverash3` candidate cells, then `st_covers`.
   - Synonyms: ABR = annualized base rent, plus region names.
   - Measures come from the metric view.
-  - Clause data (co-tenancy, renewal options, termination rights, exclusives) exists only for abstracted leases: leases expiring within 36 months plus the 25 largest tenants by ABR. Whenever an answer uses clause columns, also report abstraction coverage, and never treat a missing abstract as "no clause".
+  - Clause data (co-tenancy, renewal options, termination rights, exclusives) exists only for abstracted leases: leases expiring within 24 months plus the 25 largest tenants by ABR. Whenever an answer uses clause columns, also report abstraction coverage, and never treat a missing abstract as "no clause".
 - **Benchmark questions** (each with validated SQL):
   1. Show acquisitions in the pipeline over $50M by property type and market.
   2. Which held assets have >20% of rent rolling in the next 24 months?

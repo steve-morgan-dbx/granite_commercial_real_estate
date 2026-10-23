@@ -31,10 +31,12 @@ Unity Catalog: volumes, tags, masks, fund row filter, lineage, metric view, trus
 8. Databricks Apps - the business surface for asset managers
 
 ## Demo Flow
+The full voice track, with timings, clicks and an objection bank for the business and technical stakeholders, is in [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md).
+
 1. Setup: deploy with Declarative Automation Bundles (`databricks.yml`, `dev` target), or run `notebooks/00_setup.ipynb` and the numbered notebooks in order.
-2. Act 1 - Documents become data: a lease PDF becomes an abstract with confidence scores, discrepancies with the ERP are flagged, and lineage shows the path.
-3. Act 2 - Ask Genie: rollover, co-tenancy and competitor density in one question; the same question returns different rows for users in different funds.
-4. Act 3 - Act on it: in the app, review a low-confidence abstract next to its PDF and correct it; the fix flows through Lakebase to gold and Genie.
+2. Act 1 - Documents become data: a lease PDF becomes an abstract, discrepancies with the ERP are flagged, and lineage shows the path.
+3. Act 2 - Ask Genie: rollover, co-tenancy and competitor density in one question; answers respect the fund row filter; a deal-screening follow-up uses the trusted H3 functions.
+4. Act 3 - Act on it: in the app, select a flagged lease, compare the PDF and ERP values, and approve a correction; the fix flows through Lakebase to gold and Genie.
 5. Act 4 - Predict: renewal probability × ABR at risk gives expected vacancy loss by asset and fund.
 
 ## Catalog / Schema

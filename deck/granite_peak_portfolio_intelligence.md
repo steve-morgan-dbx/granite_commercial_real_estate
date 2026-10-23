@@ -7,7 +7,7 @@
 
 ## 1. The outcome
 
-**Every lease, every clause, every neighborhood: one question away.**
+**Every lease, every clause, every neighborhood: one question away. Estimated value ≈ $1.4M a year.**
 
 | | Before | After |
 |---|---|---|
@@ -60,7 +60,21 @@ So the questions that matter to an investment committee take days, and they're a
 
 ---
 
-## 5. Why Databricks
+## 5. The value, in dollars
+
+**≈ $1.4M a year on a $370.8M rent roll (about 0.4% of ABR).** Each line has a stated assumption you can change.
+
+| Lever | Assumption | Value |
+|---|---|---|
+| Renewals won back | +3 points of renewal rate on the $89.8M of ABR expiring in 24 months; 9 months of downtime avoided per renewal | ≈ $1.0M / year |
+| Rent billing corrected | Half of the $0.68M a year in rent differences on 12 rent-mismatched leases resolved in the landlord's favor | ≈ $0.34M / year |
+| Abstraction cost avoided | 391 leases × $150–400 per outsourced abstraction; analysts review only flagged leases | ≈ $0.06–0.16M / cycle |
+
+**Sensitivity:** each point of renewal rate on the expiring leases is worth ≈ $0.67M over 24 months. Faster deal screening is upside that isn't counted here.
+
+---
+
+## 6. Why Databricks
 
 Many products have an H3 function, a document parser or a chat-with-data feature. The difference here is **integration**: structured ERP data, unstructured documents, geospatial context, ML, natural-language analytics, an operational database and the business app all run on **one open, governed copy of the data**, with one security model and one lineage graph.
 
@@ -75,7 +89,7 @@ Many products have an H3 function, a document parser or a chat-with-data feature
 
 ---
 
-## 6. How it works
+## 7. How it works
 
 ```
 ERP CDC files ─┐
@@ -90,17 +104,31 @@ Overture Maps ─┘        │
 
 ---
 
-## 7. Demo flow (20 minutes)
+## 8. Demo flow (20 minutes)
 
 1. **Documents become data:** a lease PDF, its extracted terms, and the ERP mismatch it exposed. Lineage shows the path.
-2. **Ask Genie:** rollover, co-tenancy and competitor density in one question; "show the SQL"; the same question from a single-fund analyst returns only that fund.
+2. **Ask Genie:** rollover, co-tenancy and competitor density in one question; "show the SQL"; answers respect the fund row filter.
 3. **Act on it:** in the app, an analyst corrects a flagged lease; the fix flows through Lakebase into gold and Genie.
-4. **Screen a deal:** GP-ACQ-014. Nearby held assets, their occupancy, and the co-tenancy terms in its offering memorandum.
+4. **Screen a deal:** GP-ACQ-014. Nearby held assets, their occupancy, and the in-place lease terms from its offering memorandum.
 5. **Price the risk:** expected vacancy loss by fund and the ten leases that drive it.
 
 ---
 
-## 8. Next steps
+## 9. Decisions and trade-offs
+
+| Choice | Why | Trade-off |
+|---|---|---|
+| Extract lease terms **inside the pipeline** (`ai_parse_document` + `ai_extract`) | Lineage, governance and incremental processing for documents, the same as for tables | Less control than custom prompts; mitigated by measuring every field |
+| **Risk-weighted abstraction** (116 of 391 leases) | Spend follows risk: every lease expiring in 24 months, plus the 25 largest | Clause answers report coverage; full-portfolio abstraction comes in the pilot |
+| **H3 + trusted functions** for spatial questions in Genie | Cheap spatial joins at 4M POIs; Genie calls tested logic instead of improvising it | "About 1 km" is approximate; exact polygons are used only for neighborhoods |
+| **Security in Unity Catalog**, not the app | One fund filter for Genie, SQL and the app | Synced Lakebase tables need an unfiltered source, so the app guards Lakebase reads |
+| **Lakebase** for the app, with corrections merged back to Delta | Millisecond reads and transactional writes | The app is as fresh as the last sync; corrections land on the next pipeline run |
+
+Full list: `docs/DECISIONS.md`. How AI agents helped build it: `docs/BUILT_WITH_AI.md`.
+
+---
+
+## 10. Next steps
 
 1. **Pilot (4–6 weeks):** 50–100 real leases and one deal data room, the existing ERP gold tables, and the Genie space for one fund team.
 2. **Success criteria:** ≥ 95% accuracy on core terms on a reviewed sample; benchmark questions answered correctly; abstraction time per lease cut by ≥ 80%.

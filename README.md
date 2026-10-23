@@ -1,13 +1,30 @@
 # granite_commercial_real_estate
 
-A fictional commercial real estate (CRE) build that runs end to end on Databricks, with an emphasis on Genie.
+**Outcome: a commercial real estate investment manager can see, price and act on its lease-rollover risk in one governed platform, worth an estimated $1.4M a year on a $370.8M rent roll.**
 
-**Granite Peak Real Estate Partners** is a fictional CRE investment manager: 118 office, retail and industrial assets in eight Western US metros, about $370M of annualized base rent and an active acquisitions pipeline. Its lease terms are trapped in PDFs, its rent roll lives in its property-management ERP, and its market context lives nowhere. This build brings the three together on one governed platform, so the investment team can ask Genie questions like:
+Granite Peak Real Estate Partners (fictional) owns 118 office, retail and industrial assets in eight Western US metros: 391 leases and $370.8M of annualized base rent (ABR). **$89.8M of that rent (24.2%) rolls in the next 24 months.** The clauses that decide whether those tenants renew (renewal options, co-tenancy, termination rights) are trapped in PDFs. The rent roll lives in the property-management ERP, and nobody checks the two against each other.
+
+What the build delivers, measured on its own run:
+
+| | Result |
+|---|---|
+| Lease abstraction | 116 lease PDFs and 26 deal documents abstracted inside the data pipeline; 100% field accuracy against the answer key (clean synthetic PDFs) |
+| ERP vs. signed lease | 16 mismatched leases flagged automatically, covering $22.4M of ABR and $0.68M a year in rent differences |
+| Renewal risk, in dollars | $34.5M of expected vacancy loss over 24 months, lease by lease, from a renewal model in Unity Catalog |
+| Self-service | Genie answers 10 of 11 benchmark questions correctly (1 partial), combining lease clauses, ERP data and H3 market context, under fund-level row security |
+| Action | Analysts fix flagged abstracts in a Databricks App; corrections go through Lakebase back to the gold tables and Genie |
+
+**Estimated value: ≈ $1.4M a year**, all three assumptions stated:
+- **≈ $1.0M a year:** winning back 3 points of renewal rate on the $89.8M expiring. Each point avoids about $0.67M of downtime over 24 months, at 9 months to re-lease.
+- **≈ $0.34M a year:** half of the $0.68M a year in rent differences on the 12 rent-mismatched leases resolved in the landlord's favor.
+- **≈ $0.06–0.16M per abstraction cycle:** 391 leases at a typical $150–400 per outsourced abstraction; analysts review only the flagged leases.
 
 > *"Which retail assets have more than 25% of ABR expiring within 24 months and a co-tenancy clause?"*
 > *"For deal GP-ACQ-014, which held assets are within about 2 km, and what's their occupancy?"*
 
 All data is synthetic, except Overture Maps open data (CDLA Permissive 2.0 / ODbL).
+
+**Read next:** the business deck [`deck/`](deck/) · the demo voice track [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) · decisions and trade-offs [`docs/DECISIONS.md`](docs/DECISIONS.md) · how AI was used to build it [`docs/BUILT_WITH_AI.md`](docs/BUILT_WITH_AI.md)
 
 ## Stage map: code and execution evidence
 
@@ -33,7 +50,7 @@ Everything is deployed with a Declarative Automation Bundle (`databricks.yml`, t
 databricks bundle deploy --target dev
 databricks bundle run granite_ingest_overture   # one time: Overture places, buildings, divisions, division areas
 databricks bundle run granite_build             # setup → governance → data → pipeline → semantic layer, model → Lakebase, Genie
-# then enable the app (resources/app.yml.pending → resources/app.yml) and deploy it:
+# then point the app at your warehouse and the Genie space the build created, and deploy it:
 databricks bundle deploy --var warehouse_id=<serverless-warehouse-id> --var genie_space_id=<space-id>
 databricks bundle run granite_app
 databricks bundle run granite_app_permissions
